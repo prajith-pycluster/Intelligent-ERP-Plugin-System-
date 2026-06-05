@@ -1,0 +1,105 @@
+Date: 27/4/2026
+Time: 18:49
+Phone Number: +910000000000
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P007 - Haldiram Aloo Bhujia 400g → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 18:52
+Phone Number: +910000000000
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 18:55
+Phone Number: +910000000000
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P007 - Haldiram Aloo Bhujia 400g → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:6
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:15
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:15
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:16
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:17
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P007 - Haldiram Aloo Bhujia 400g → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:18
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:22
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P011 - Fortune Sunflower Oil 5L → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:38
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 BATCH CRITICAL STOCK ALERT 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 62. P011 - Fortune Sunflower Oil 5L → Stock: 33. P080 - Heinz Baked Beans 400g → Stock: 84. P007 - Haldiram Aloo Bhujia 400g → Stock: 3Action: Immediate restock required for all items.
+--------------------
+Date: 27/4/2026
+Time: 19:40
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P065 - Nestlé NAN Stage 1 400g → Stock: 4Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:40
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P065 - Nestlé NAN Stage 1 400g → Stock: 4Action: Immediate restock required.
+--------------------
+Date: 27/4/2026
+Time: 19:41
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P025 - Nivea Body Lotion 400ml → Stock: 6Action: Immediate restock required.
+--------------------
+Date: 28/4/2026
+Time: 14:46
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P011 - Fortune Sunflower Oil 5L → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 28/4/2026
+Time: 14:47
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P011 - Fortune Sunflower Oil 5L → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 28/4/2026
+Time: 14:47
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P011 - Fortune Sunflower Oil 5L → Stock: 3Action: Immediate restock required.
+--------------------
+Date: 28/4/2026
+Time: 15:13
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P080 - Heinz Baked Beans 400g → Stock: 8Action: Immediate restock required.
+--------------------
+Date: 28/4/2026
+Time: 15:51
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P023 - Dove Shampoo 650ml → Stock: 5Action: Immediate restock required.
+--------------------
+Date: 13/5/2026
+Time: 16:20
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P080 - Heinz Baked Beans 400g → Stock: 8Action: Immediate restock required.
+--------------------
+Date: 13/5/2026
+Time: 16:21
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P080 - Heinz Baked Beans 400g → Stock: 8Action: Immediate restock required.
+--------------------
