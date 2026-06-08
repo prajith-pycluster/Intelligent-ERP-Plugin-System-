@@ -54,6 +54,45 @@ All colors MUST be HSL.
     --risk: 0 72% 55%;
     --risk-foreground: 0 0% 100%;
   }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 224.3 76.3% 48%;
+  }
 }
 
 @layer base {
@@ -63,5 +102,109 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Definition of the Typography System for Authenticated Area */
+@layer base {
+  .app-authenticated {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  
+  .app-authenticated h1,
+  .app-authenticated .app-page-title {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 32px !important;
+    line-height: 40px !important;
+  }
+
+  .app-authenticated h2,
+  .app-authenticated .app-section-heading {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 24px !important;
+    line-height: 32px !important;
+  }
+
+  .app-authenticated h3,
+  .app-authenticated .app-card-heading {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+  }
+
+  .app-authenticated h4,
+  .app-authenticated .app-subheading {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+  }
+
+  .app-authenticated,
+  .app-authenticated p,
+  .app-authenticated label,
+  .app-authenticated span,
+  .app-authenticated li,
+  .app-authenticated input,
+  .app-authenticated select,
+  .app-authenticated textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 22px;
+    font-weight: 400;
+  }
+
+  .app-authenticated label {
+    font-weight: 500;
+  }
+
+  /* Navigation menu */
+  .app-authenticated [data-sidebar="menu-button"],
+  .app-authenticated .sidebar-menu-item,
+  .app-authenticated .app-nav-menu {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+  }
+
+  /* Table headers */
+  .app-authenticated th,
+  .app-authenticated .app-table-header {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+
+  /* Table data */
+  .app-authenticated td,
+  .app-authenticated .app-table-data {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+  }
+
+  /* Buttons */
+  .app-authenticated button,
+  .app-authenticated .app-button {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+  }
+
+  /* Metric Cards Custom Styles */
+  .app-authenticated .metric-card-label {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+
+  .app-authenticated .metric-card-value {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    line-height: normal !important;
   }
 }

@@ -246,8 +246,8 @@ def run_predictive_pipeline(final_df, current_date=None, daily_sales=None):
         if matched_rule:
             matched_active_names.add(matched_rule["product_name"])
             
-            # Respect manual revert or deadline state - don't automatically upgrade back to PREDICTIVE
-            if curr_mode in ["REVIEW_MANUAL", "REVIEW_DEADLINE"]:
+            # Respect manual revert, deadline state, or excluded state
+            if curr_mode in ["REVIEW_MANUAL", "REVIEW_DEADLINE", "EXCLUDED"]:
                 continue
             
             curr_stock = product.get("current_stock", 0)
@@ -274,8 +274,8 @@ def run_predictive_pipeline(final_df, current_date=None, daily_sales=None):
                     "predictive_tag": get_predictive_tag(item_id),
                     "predictive_reason": "Season ended - Deadline",
                     "predictive_score": 0,
-                    "predictive_start": None,
-                    "predictive_end": None
+                    "predictive_start": matched_rule.get("start_date"),
+                    "predictive_end": matched_rule.get("end_date")
                 })
                 continue
                 
@@ -319,8 +319,8 @@ def run_predictive_pipeline(final_df, current_date=None, daily_sales=None):
                         "predictive_tag": get_predictive_tag(item_id),
                         "predictive_reason": "Season ended - Deadline",
                         "predictive_score": 0,
-                        "predictive_start": None,
-                        "predictive_end": None
+                        "predictive_start": product.get("predictive_start"),
+                        "predictive_end": product.get("predictive_end")
                     })
 
     # 3. Handle PS (New Temporary Products)
@@ -373,3 +373,92 @@ def run_predictive_pipeline(final_df, current_date=None, daily_sales=None):
 
     # Return updates so app.py can update final_df in memory, plus godown_recs for the API
     return updates_to_push, godown_recommendations
+
+
+def fetch_expired_predictive_products(current_date=None):
+    if not supabase:
+        print("[ERROR] Supabase client not found.")
+        return []
+        
+    if current_date is None:
+        current_date = datetime.now()
+        
+    def safe_fetch(table_name):
+        try:
+            res = supabase.table(table_name).select("*").execute()
+            return res.data if res.data else []
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch {table_name}: {e}")
+            return []
+
+    seasonal_data = safe_fetch("seasonal_inventory")
+    festival_data = safe_fetch("festival_inventory")
+    national_data = safe_fetch("national_day_inventory")
+    
+    expired_products = []
+    
+    def process_and_filter_expired(data_list, source_label):
+        for row in data_list:
+            try:
+                start = row.get("START_DATE") or row.get("start_date") or row.get("EVENT_DATE") or row.get("event_date")
+                end = row.get("END_DATE") or row.get("end_date") or start
+                
+                if not start or not end:
+                    continue
+                    
+                start_date_str = str(start).replace("/", "-").strip()
+                end_date_str = str(end).replace("/", "-").strip()
+                
+                start_parts = start_date_str.split('-')
+                end_parts = end_date_str.split('-')
+                
+                if len(start_parts) != 2 or len(end_parts) != 2:
+                    continue
+                    
+                start_day, start_month = int(start_parts[0]), int(start_parts[1])
+                end_day, end_month = int(end_parts[0]), int(end_parts[1])
+                
+                y = current_date.year
+                start_dt = datetime(y, start_month, start_day)
+                end_dt = datetime(y, end_month, end_day)
+                
+                if start_month > end_month:
+                    # Cross year
+                    if current_date.month <= end_month:
+                        start_dt = datetime(y - 1, start_month, start_day)
+                    else:
+                        end_dt = datetime(y + 1, end_month, end_day)
+                
+                if current_date.date() > end_dt.date():
+                    item_id = str(row.get("ITEM_ID") or row.get("Item ID") or row.get("item_id") or "").strip()
+                    p_name = str(row.get("product_name") or row.get("PRODUCT_NAME") or row.get("Product Name") or "")
+                    cat = str(row.get("category") or row.get("CATEGORY") or row.get("Category") or "Uncategorized")
+                    
+                    raw_price = (row.get("unit_price") or row.get("UNIT_PRICE") or row.get("Unit Price") or 0)
+                    try:
+                        unit_price = float(raw_price)
+                    except (TypeError, ValueError):
+                        unit_price = 0.0
+                        
+                    expired_products.append({
+                        "item_id": item_id,
+                        "item_name": p_name,
+                        "category": cat,
+                        "unit_price": unit_price,
+                        "current_stock": 0,
+                        "inventory_mode": "REVIEW_DEADLINE",
+                        "predictive_tag": "PS",
+                        "predictive_start": start,
+                        "predictive_end": end,
+                        "predictive_reason": f"Season ended - Deadline ({source_label})",
+                        "predictive_score": 0
+                    })
+            except Exception as e:
+                print(f"[ERROR] Expired parsing failed for item {row}: {e}")
+                
+    process_and_filter_expired(seasonal_data, "SEASONAL")
+    process_and_filter_expired(festival_data, "FESTIVAL")
+    process_and_filter_expired(national_data, "NATIONAL_DAY")
+    
+    return expired_products
+

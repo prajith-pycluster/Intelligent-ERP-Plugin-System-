@@ -8,9 +8,26 @@ def get_safety_stock(df, item_id):
     return round(row["safety_stock"].values[0], 2)
 
 
-def get_demand_trend(daily_sales, item_id):
+def get_demand_trend(daily_sales, item_id, final_df=None):
     import pandas as pd
     
+    # Check if this item is healthy (overstock -> NO, stockout -> NO). If so, trend is Stable.
+    target_df = None
+    if final_df is not None:
+        target_df = final_df
+    elif daily_sales is not None and hasattr(daily_sales, "columns") and "reorder_needed" in daily_sales.columns:
+        target_df = daily_sales
+
+    if target_df is not None:
+        from query_layer.boolean_queries import get_stockout_risk, get_overstock_risk
+        try:
+            stockout = get_stockout_risk(target_df, item_id)
+            overstock = get_overstock_risk(target_df, item_id)
+            if stockout == "NO" and overstock == "NO":
+                return "Stable"
+        except Exception:
+            pass
+
     # Use daily_sales data
     df = daily_sales[daily_sales["item_id"] == item_id].copy()
     

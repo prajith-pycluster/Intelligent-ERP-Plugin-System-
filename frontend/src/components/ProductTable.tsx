@@ -65,7 +65,7 @@ const ProductTable = ({ products, filterLabel, onRefresh }: { products: Product[
     if (val === "YES") {
       return type === "stockout"
         ? <Badge className="bg-risk/15 text-risk border-0 font-medium">YES</Badge>
-        : <Badge className="bg-warning/15 text-warning border-0 font-medium">YES</Badge>;
+        : <Badge className="bg-purple-500/15 text-purple-600 border-0 font-medium">YES</Badge>;
     }
     return <Badge className="bg-success/15 text-success border-0 font-medium">NO</Badge>;
   };
@@ -131,7 +131,7 @@ const ProductTable = ({ products, filterLabel, onRefresh }: { products: Product[
                      </TableCell>
                    </TableRow>
                    {groupItems.map((p) => {
-                     const rowColor = p.stockout_risk === "YES" ? "bg-risk/5 hover:bg-risk/10" : p.overstock_risk === "YES" ? "bg-warning/5 hover:bg-warning/10" : "hover:bg-muted/50";
+                     const rowColor = p.stockout_risk === "YES" ? "bg-risk/5 hover:bg-risk/10" : p.overstock_risk === "YES" ? "bg-purple-500/5 hover:bg-purple-500/10" : "hover:bg-muted/50";
                      return (
                        <TableRow key={p.item_id} className={`${rowColor} cursor-pointer transition-colors`} onClick={() => navigate(`/insights?id=${p.item_id}`)}>
                          <TableCell className="font-medium">

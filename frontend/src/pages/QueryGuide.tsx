@@ -89,9 +89,9 @@ const QueryGuide = () => {
   return (
     <div className="space-y-6 pb-12 w-full max-w-6xl mx-auto">
       <div>
-        <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+        <h1 className="text-[32px] font-bold text-foreground flex items-center gap-2 leading-[40px]">
           Understanding Queries
-        </h2>
+        </h1>
         <p className="text-muted-foreground text-sm mt-1">
           A definitive handbook for understanding inventory metrics and system parameters.
         </p>

@@ -21,12 +21,25 @@ const Settings = () => {
   const [twoFactor, setTwoFactor] = useState(false);
   const [emailNotif, setEmailNotif] = useState(true);
   const [systemAlerts, setSystemAlerts] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return document.documentElement.classList.contains("dark") || localStorage.getItem("theme") === "dark";
+  });
+
+  const handleDarkToggle = (checked: boolean) => {
+    setDarkMode(checked);
+    if (checked) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Settings</h2>
+        <h1 className="text-[32px] font-bold text-foreground leading-[40px]">Settings</h1>
         <p className="text-muted-foreground text-sm">Manage security and application preferences</p>
       </div>
 
@@ -43,20 +56,6 @@ const Settings = () => {
             </div>
             <Switch checked={twoFactor} onCheckedChange={setTwoFactor} />
           </div>
-          <Separator />
-          <div>
-            <p className="text-sm font-medium text-card-foreground mb-2 flex items-center gap-2">
-              <LogIn className="h-4 w-4 text-muted-foreground" /> Recent Login Activity
-            </p>
-            <div className="space-y-2">
-              {loginActivity.map((a, i) => (
-                <div key={i} className="flex items-center justify-between text-xs bg-muted/50 rounded-lg px-3 py-2">
-                  <span className="text-muted-foreground">{a.date}</span>
-                  <span className="text-card-foreground font-medium">{a.device}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </SectionCard>
 
@@ -67,7 +66,7 @@ const Settings = () => {
               <Monitor className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-card-foreground">Dark Mode</span>
             </div>
-            <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+            <Switch checked={darkMode} onCheckedChange={handleDarkToggle} />
           </div>
           <Separator />
           <div className="flex items-center justify-between">

@@ -106,6 +106,7 @@ export default function PredictiveInventory() {
   const godownRecs = data?.godown_recommendations || [];
   const reviewDeadline = data?.review_deadline || [];
   const reviewManual = data?.review_manual || [];
+  const allReviewItems = [...reviewDeadline, ...reviewManual];
 
   // Derive correct tag from item_id prefix: SI/NI/FI = PS, P = EXPS
   const getDisplayTag = (item: any): string => {
@@ -145,17 +146,17 @@ export default function PredictiveInventory() {
     setReviewAction(action);
   };
 
-  const totalReviewItems = reviewDeadline.length;
+  const totalReviewItems = allReviewItems.length;
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto w-full">
       {/* HEADER SECTION */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-card p-5 rounded-xl border border-border shadow-sm">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
+          <h1 className="text-[32px] font-bold flex items-center gap-2 text-foreground leading-[40px]">
             <Sparkles className="h-6 w-6 text-purple-500" />
             Predictive Inventory Dashboard
-          </h2>
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
             AI-assisted forecasting for seasonal products, temporary stock, and lifecycle management.
           </p>
@@ -213,11 +214,10 @@ export default function PredictiveInventory() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Item ID</TableHead>
-                        <TableHead>Name</TableHead>
+                        <TableHead className="w-1/3">Name</TableHead>
                         <TableHead>Unit Price</TableHead>
-                        <TableHead>Current Stock</TableHead>
-                        <TableHead>Predicted Demand</TableHead>
-                        <TableHead>Additional Qty</TableHead>
+                        <TableHead className="text-right">Current Stock</TableHead>
+                        <TableHead className="text-right">Predicted Demand</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -227,11 +227,10 @@ export default function PredictiveInventory() {
                         return (
                         <TableRow key={item.item_id}>
                           <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
-                          <TableCell>{item.item_name}</TableCell>
+                          <TableCell className="font-medium">{item.item_name}</TableCell>
                           <TableCell className="font-medium text-green-700">{item.unit_price != null && item.unit_price > 0 ? `₹${item.unit_price}` : "N/A"}</TableCell>
-                          <TableCell>{item.current_stock}</TableCell>
-                          <TableCell className="font-semibold">{item.predicted_demand}</TableCell>
-                          <TableCell className="font-bold text-amber-600">{item.additional_qty}</TableCell>
+                          <TableCell className="text-right">{item.current_stock}</TableCell>
+                          <TableCell className="text-right font-semibold">{item.predicted_demand}</TableCell>
                           <TableCell className="text-right">
                             {isApproved ? (
                               <Badge className="bg-green-100 text-green-700 border-green-200 font-semibold text-xs px-3 py-1">
@@ -286,9 +285,6 @@ export default function PredictiveInventory() {
                           <AlertTriangle className="h-5 w-5 text-amber-500" />
                           Predictive Stocks (PS)
                         </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Temporary predictive products — approved in Godown or detected from seasonal/festival datasets.
-                        </p>
                       </div>
                       <div className="flex items-center gap-3 text-xs">
                         <span className="flex items-center gap-1.5">
@@ -308,28 +304,26 @@ export default function PredictiveInventory() {
                     ) : (
                       <Table>
                         <TableHeader>
-                          <TableRow>
-                            <TableHead>Item ID</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Unit Price</TableHead>
-                            <TableHead>Current Stock</TableHead>
-                            <TableHead>Predicted Demand</TableHead>
-                            <TableHead>Additional Qty</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {psStocks.map((item: any) => {
-                            const isApproved = godownApproved.has(item.item_id);
-                            const isPending = item._status === "pending";
-                            return (
-                            <TableRow key={item.item_id}>
-                              <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
-                              <TableCell>{item.item_name}</TableCell>
-                              <TableCell className="font-medium text-green-700">{item.unit_price != null && item.unit_price > 0 ? `₹${item.unit_price}` : "N/A"}</TableCell>
-                              <TableCell>{item.current_stock ?? 0}</TableCell>
-                              <TableCell className="font-semibold">{item.predicted_demand}</TableCell>
-                              <TableCell className="font-bold text-amber-600">{item.additional_qty}</TableCell>
+                      <TableRow>
+                        <TableHead>Item ID</TableHead>
+                        <TableHead className="w-1/3">Name</TableHead>
+                        <TableHead>Unit Price</TableHead>
+                        <TableHead className="text-right">Current Stock</TableHead>
+                        <TableHead className="text-right">Predicted Demand</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {psStocks.map((item: any) => {
+                        const isApproved = godownApproved.has(item.item_id);
+                        const isPending = item._status === "pending";
+                        return (
+                        <TableRow key={item.item_id}>
+                          <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
+                          <TableCell className="font-medium">{item.item_name}</TableCell>
+                          <TableCell className="font-medium text-green-700">{item.unit_price != null && item.unit_price > 0 ? `₹${item.unit_price}` : "N/A"}</TableCell>
+                          <TableCell className="text-right">{item.current_stock ?? 0}</TableCell>
+                          <TableCell className="text-right font-semibold">{item.predicted_demand}</TableCell>
                               <TableCell className="text-right">
                                 {isApproved ? (
                                   <Badge className="bg-green-100 text-green-700 border-green-200 font-semibold text-xs px-3 py-1">
@@ -364,44 +358,68 @@ export default function PredictiveInventory() {
                 <div className="p-4 border-b border-border bg-muted/20">
                   <h3 className="font-semibold text-lg flex items-center gap-2">
                     <CalendarX className="h-5 w-5 text-red-500" />
-                    Deadline List (Expired Lifecycle)
+                    Expired Lifecycle Products (Review Window)
                   </h3>
+                  <p className="text-sm text-muted-foreground mt-1">Products awaiting review due to expired lifecycle or manual reversion.</p>
                 </div>
-                {reviewDeadline.length === 0 ? (
+                {allReviewItems.length === 0 ? (
                   <div className="p-12 text-center text-muted-foreground">
-                    <p>No products in the deadline list.</p>
+                    <p>No products in the review window.</p>
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Item ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Unit Price</TableHead>
-                        <TableHead>Current Stock</TableHead>
+                        <TableHead className="w-1/4">Product Name</TableHead>
+                        <TableHead className="text-right">Current Stock</TableHead>
+                        <TableHead>Lifecycle Status</TableHead>
+                        <TableHead>Expiry / Deadline Date</TableHead>
+                        <TableHead>Recommended Action</TableHead>
                         <TableHead className="text-right">Decision</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {reviewDeadline.map((item: any) => (
-                        <TableRow key={item.item_id}>
-                          <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
-                          <TableCell>{item.item_name}</TableCell>
-                          <TableCell className="font-medium text-green-700">{item.unit_price != null && item.unit_price > 0 ? `₹${item.unit_price}` : "N/A"}</TableCell>
-                          <TableCell>{item.current_stock}</TableCell>
-                          <TableCell className="text-right space-x-2">
-                            <Button size="sm" variant="outline" onClick={() => openReviewDialog(item, "NORMAL")}>
-                              <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" /> Keep (Normal)
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => openReviewDialog(item, "PREDICTIVE")}>
-                              <RotateCcw className="h-4 w-4 mr-1 text-blue-500" /> Keep (Predictive)
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => openReviewDialog(item, "DISCONTINUE")}>
-                              <XCircle className="h-4 w-4 mr-1" /> Discontinue
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {allReviewItems.map((item: any) => {
+                        const status = item.inventory_mode === "REVIEW_DEADLINE" ? "Expired" : "Reverted";
+                        const isTemp = String(item.item_id).toUpperCase().startsWith("SI") || 
+                                       String(item.item_id).toUpperCase().startsWith("NI") || 
+                                       String(item.item_id).toUpperCase().startsWith("FI");
+                        const recommendedAction = isTemp ? "Remove from Predictive" : "Move to Normal";
+                        
+                        return (
+                          <TableRow key={item.item_id}>
+                            <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
+                            <TableCell className="font-medium">{item.item_name}</TableCell>
+                            <TableCell className="text-right">{item.current_stock}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className={`font-semibold text-[11px] px-2 py-0.5 ${status === "Expired" ? "bg-red-100 text-red-700 border-red-200" : "bg-amber-100 text-amber-700 border-amber-200"}`}>
+                                {status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-medium">{item.predictive_end || "N/A"}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground italic">{recommendedAction}</TableCell>
+                            <TableCell className="text-right space-x-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-red-600 border-red-200 hover:bg-red-50"
+                                onClick={() => openReviewDialog(item, "EXCLUDE")}
+                              >
+                                Remove From Predictive
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-green-600 border-green-200 hover:bg-green-50"
+                                onClick={() => openReviewDialog(item, "NORMAL")}
+                              >
+                                Move To Normal
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 )}
@@ -433,40 +451,26 @@ export default function PredictiveInventory() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Item ID</TableHead>
-                      <TableHead>Name</TableHead>
+                      <TableHead className="w-1/3">Name</TableHead>
                       <TableHead>Tag</TableHead>
                       <TableHead>Unit Price</TableHead>
-                      <TableHead>Current Stock</TableHead>
-                      <TableHead>Predicted Demand</TableHead>
-                      <TableHead>Additional Qty</TableHead>
-                      <TableHead className="text-right">Action</TableHead>
+                      <TableHead className="text-right">Current Stock</TableHead>
+                      <TableHead className="text-right">Predicted Demand</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {inStockItems.map((item: any) => (
                       <TableRow key={item.item_id}>
                         <TableCell className="font-medium text-primary">{item.item_id}</TableCell>
-                        <TableCell>{item.item_name}</TableCell>
+                        <TableCell className="font-medium">{item.item_name}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className={`uppercase font-bold text-[10px] ${getDisplayTag(item) === 'PS' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
                             {getDisplayTag(item)}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-medium text-green-700">{item.unit_price != null && item.unit_price > 0 ? `₹${item.unit_price}` : "N/A"}</TableCell>
-                        <TableCell>{item.current_stock}</TableCell>
-                        <TableCell className="font-semibold">{item.predicted_demand}</TableCell>
-                        <TableCell className="font-bold text-amber-600">{item.additional_qty}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-orange-600 border-orange-300 hover:bg-orange-50"
-                            disabled={revertMutation.isPending}
-                            onClick={() => handleRevert(item)}
-                          >
-                            <RotateCcw className="h-3 w-3 mr-1" /> Revert
-                          </Button>
-                        </TableCell>
+                        <TableCell className="text-right">{item.current_stock}</TableCell>
+                        <TableCell className="text-right font-semibold">{item.predicted_demand}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -480,23 +484,28 @@ export default function PredictiveInventory() {
       <AlertDialog open={!!selectedReviewItem} onOpenChange={(o) => (!o ? setSelectedReviewItem(null) : null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Review Product Lifecycle</AlertDialogTitle>
+            <AlertDialogTitle>
+              {reviewAction === "EXCLUDE" ? "Remove from Predictive Inventory" : "Move to Normal Inventory"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to{" "}
-              {reviewAction === "NORMAL"
-                ? "move"
-                : reviewAction === "PREDICTIVE"
-                ? "restore"
-                : "discontinue"}{" "}
-              <b>{selectedReviewItem?.item_name}</b>
-              {reviewAction === "NORMAL" && " to Normal inventory? It will be removed from Predictive mode."}
-              {reviewAction === "PREDICTIVE" && " back to Predictive Stocks? It will be re-added to the active predictive inventory."}
-              {reviewAction === "DISCONTINUE" && " This will logically delete the product and clear it from active displays."}
+              {reviewAction === "EXCLUDE" ? (
+                <>
+                  Are you sure you want to exclude <b>{selectedReviewItem?.item_name}</b> from future predictive calculations? The product will remain in the normal inventory database and can be sold if stock exists.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to convert <b>{selectedReviewItem?.item_name}</b> back to a standard inventory item? It will continue to exist in Product Management and Billing, but will no longer have predictive status.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={reviewMutation.isPending}>Cancel</AlertDialogCancel>
-            <Button onClick={handleReview} disabled={reviewMutation.isPending} variant={reviewAction === "DISCONTINUE" ? "destructive" : "default"}>
+            <Button 
+              onClick={handleReview} 
+              disabled={reviewMutation.isPending} 
+              variant={reviewAction === "EXCLUDE" ? "destructive" : "default"}
+            >
               {reviewMutation.isPending && <Loader2 className="animate-spin h-4 w-4 mr-2" />} 
               Confirm
             </Button>

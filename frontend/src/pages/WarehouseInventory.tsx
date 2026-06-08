@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProducts, useRestockHistory, usePredictiveInventory, usePredictiveApprove } from "@/hooks/useInventory";
+import { useProducts, usePredictiveInventory, usePredictiveApprove } from "@/hooks/useInventory";
 import { 
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
@@ -9,82 +9,36 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PackageSearch, ShoppingCart, Plus, Check, Loader2, Clock, AlertTriangle } from "lucide-react";
+import { PackageSearch, ShoppingCart, Plus, Check, Loader2, AlertTriangle } from "lucide-react";
 
-const RestockHistoryTab = () => {
-  const { data: history, isLoading } = useRestockHistory();
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-64 text-muted-foreground"><Loader2 className="animate-spin h-6 w-6 mr-2" /> Loading history...</div>;
-  }
-
-  return (
-    <div className="space-y-6">
-      {history?.length === 0 ? (
-        <div className="text-center py-20 bg-card rounded-xl border border-border shadow-sm">
-          <Clock className="mx-auto h-12 w-12 text-muted-foreground opacity-20 mb-4" />
-          <p className="text-lg text-muted-foreground font-medium">No restock history available</p>
-        </div>
-      ) : (
-        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-          <Table>
-            <TableHeader className="bg-muted/40">
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Item ID</TableHead>
-                <TableHead>Product Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Quantity Added</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {history?.map((item: any) => (
-                <TableRow key={item.id} className="hover:bg-muted/30 transition-colors">
-                  <TableCell>{new Date(item.created_at).toLocaleString()}</TableCell>
-                  <TableCell className="font-semibold text-primary/80">{item.item_id}</TableCell>
-                  <TableCell>{item.product_name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-blue-500 border-blue-500/20">{item.type}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-green-600">+{item.quantity_added}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default function Godown() {
+export default function WarehouseInventory() {
   const { data: products, isLoading } = useProducts();
   const { data: predictiveData, isLoading: predictiveLoading } = usePredictiveInventory();
   const approveMutation = usePredictiveApprove();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem("godown_active_tab") || "restock-required";
+    return sessionStorage.getItem("warehouse_active_tab") || "restock-required";
   });
 
   const handleTabChange = (val: string) => {
     setActiveTab(val);
-    localStorage.setItem("godown_active_tab", val);
+    sessionStorage.setItem("warehouse_active_tab", val);
   };
 
-  // Persistent Load List State via Local Storage
+  // Persistent Load List State via Session Storage
   const [loadList, setLoadList] = useState<{item_id: string, product_name: string, suggested_quantity: number}[]>(() => {
     try {
-      const saved = localStorage.getItem("godown_load_list");
+      const saved = sessionStorage.getItem("warehouse_load_list") || sessionStorage.getItem("godown_load_list");
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
   });
 
-  // Sync Load List to Local Storage on Change
+  // Sync Load List to Session Storage on Change
   useEffect(() => {
-    localStorage.setItem("godown_load_list", JSON.stringify(loadList));
+    sessionStorage.setItem("warehouse_load_list", JSON.stringify(loadList));
   }, [loadList]);
 
   // Sync with Backend items: Drop validly restocked or optimal items globally
@@ -97,25 +51,30 @@ export default function Godown() {
       }));
     }
   }, [products, predictiveData]);
+
   // Custom Inline Quantities State
   const [customQuantities, setCustomQuantities] = useState<Record<string, number>>({});
 
   if (isLoading || predictiveLoading) {
-    return <div className="p-8 text-muted-foreground animate-pulse flex items-center gap-2"><PackageSearch className="w-5 h-5"/> Loading Godown Items...</div>;
+    return (
+      <div className="p-8 text-muted-foreground animate-pulse flex items-center gap-2">
+        <PackageSearch className="w-5 h-5"/> Loading Warehouse Items...
+      </div>
+    );
   }
 
   const restockItems = products?.filter((p: any) => p.stockout_risk === "YES") || [];
 
   // Only show predictive recs that were explicitly approved from Predictive Inventory page
-  const godownApprovedIds: Set<string> = (() => {
+  const approvedIds: Set<string> = (() => {
     try {
-      const saved = localStorage.getItem("pi_godown_approved");
+      const saved = localStorage.getItem("pi_godown_approved") || localStorage.getItem("pi_warehouse_approved");
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch { return new Set(); }
   })();
 
   const predictiveRecs = (predictiveData?.godown_recommendations || [])
-    .filter((p: any) => p.additional_qty > 0 && godownApprovedIds.has(p.item_id));
+    .filter((p: any) => p.additional_qty > 0 && approvedIds.has(p.item_id));
 
   const handleQuantityChange = (itemId: string, val: string) => {
     const num = parseInt(val, 10);
@@ -163,9 +122,9 @@ export default function Godown() {
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 w-full">
       <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border shadow-sm mb-6">
         <div>
-          <h1 className="text-xl font-bold flex items-center gap-2 text-foreground">
+          <h1 className="text-[32px] font-bold flex items-center gap-2 text-foreground leading-[40px]">
             <PackageSearch className="w-5 h-5 text-primary" />
-            Godown View
+            Warehouse Inventory
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Review items at stockout risk and track batch restocks.</p>
         </div>
@@ -173,10 +132,9 @@ export default function Godown() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="restock-required">Normal Restocking</TabsTrigger>
             <TabsTrigger value="predictive-restocking">Predictive Restocking</TabsTrigger>
-            <TabsTrigger value="restock-history">Restock History</TabsTrigger>
           </TabsList>
 
           {/* Proceed Bar if Batched - visible on both Normal and Predictive tabs */}
@@ -302,7 +260,7 @@ export default function Godown() {
                   <AlertTriangle className="w-5 h-5 text-amber-500" /> 
                   Predictive Restocking Queue
                 </CardTitle>
-                <CardDescription>AI-driven seasonal and event-based recommendations awaiting your approval.</CardDescription>
+                <CardDescription>AI-driven seasonal and event-based recommendations awaiting approval.</CardDescription>
               </CardHeader>
               <CardContent>
                 {predictiveRecs.length === 0 ? (
@@ -389,10 +347,6 @@ export default function Godown() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="restock-history" className="animate-in fade-in duration-300">
-          <RestockHistoryTab />
         </TabsContent>
       </Tabs>
     </div>

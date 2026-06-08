@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { PackagePlus, Save, Loader2, Info, Edit, Trash2, Search, RotateCcw, XCircle, AlertCircle, ShoppingCart, MessageCircle } from "lucide-react";
+import { PackagePlus, Save, Loader2, Info, Edit, Trash2, Search, RotateCcw, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useRecycleBin, useRestoreProduct, usePermanentDeleteProduct, useProduct, useAddProduct, useEditProduct, useDeleteProduct, useProducts, useSendWhatsAppAlert, useMarketBasket, useTopMarketBasketGroups } from "@/hooks/useInventory";
+import { useRecycleBin, useRestoreProduct, usePermanentDeleteProduct, useProduct, useAddProduct, useEditProduct, useDeleteProduct, useProducts } from "@/hooks/useInventory";
+import ProductInsights from "./ProductInsights";
 
 const RecycleBinTab = () => {
   const { data: items = [], isLoading, error: queryError } = useRecycleBin();
@@ -126,366 +127,33 @@ const RecycleBinTab = () => {
   );
 };
 
-
-
-const MarketBasketTab = () => {
-  const { data: topGroups = [], isLoading: isLoadingTop } = useTopMarketBasketGroups();
-  const { data: products = [] } = useProducts();
-
-  const [searchId, setSearchId] = useState(() => sessionStorage.getItem("pm_mb_searchId") || "");
-  const [fetchId, setFetchId] = useState<string | null>(() => sessionStorage.getItem("pm_mb_fetchId") || null);
-  const { data: manualRecommendations = [], isLoading: isLoadingManual } = useMarketBasket(fetchId || "");
-  
-  const [filterStrength, setFilterStrength] = useState<string>(() => sessionStorage.getItem("pm_mb_filter") || "All");
-
-  useEffect(() => {
-    sessionStorage.setItem("pm_mb_searchId", searchId);
-  }, [searchId]);
-
-  useEffect(() => {
-    if (fetchId) sessionStorage.setItem("pm_mb_fetchId", fetchId);
-    else sessionStorage.removeItem("pm_mb_fetchId");
-  }, [fetchId]);
-
-  useEffect(() => {
-    sessionStorage.setItem("pm_mb_filter", filterStrength);
-  }, [filterStrength]);
-
-  const renderRecommendationCard = (rec: any, idx: number, isGlobal: boolean = false) => {
-    let strengthBadge = { label: "Weak", color: "bg-slate-100 text-slate-700 border-slate-200" };
-    if (rec.lift >= 3.0) strengthBadge = { label: "Very Strong", color: "bg-purple-100 text-purple-700 border-purple-200" };
-    else if (rec.lift >= 2.0) strengthBadge = { label: "Strong", color: "bg-green-100 text-green-700 border-green-200" };
-    else if (rec.lift >= 1.5) strengthBadge = { label: "Moderate", color: "bg-blue-100 text-blue-700 border-blue-200" };
-
-    return (
-      <div key={idx} className="bg-card p-4 lg:p-5 rounded-xl border border-border shadow-sm flex flex-col h-full">
-        <div className="flex flex-col gap-3 mb-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <div className={`px-2 py-0.5 rounded text-[10px] font-bold border ${strengthBadge.color} whitespace-nowrap`}>
-              {strengthBadge.label} Match
-            </div>
-            {rec.source === "manual_seed" ? (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200">
-                Retail Bundle
-              </span>
-            ) : (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 border border-indigo-200">
-                AI Learned
-              </span>
-            )}
-          </div>
-          
-          <div>
-            <div className="font-bold text-foreground text-[15px] leading-tight mb-1.5">
-              {isGlobal && <span>{rec.item_name || rec.item_id} <span className="text-muted-foreground font-normal mx-1">+</span></span>}
-              <span>{rec.recommended_item_name || rec.recommended_item_id || rec.item_id}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
-              {isGlobal && <span className="font-medium text-[11px]">({rec.item_id} → {rec.recommended_item_id})</span>}
-              {!isGlobal && <span className="font-medium text-[11px]">({rec.recommended_item_id || rec.item_id})</span>}
-              {rec.category && <span className="bg-muted px-2 py-0.5 rounded text-[10px] font-medium">{rec.category}</span>}
-              {rec.unit_price > 0 && <span>₹{rec.unit_price}</span>}
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-muted/30 p-3 rounded-lg border border-border/50 text-sm flex flex-col gap-2 mt-auto">
-          {rec.description && <p className="text-foreground/80 italic">"{rec.description}"</p>}
-          <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
-            <span className="font-medium text-primary">Confidence: {rec.confidence}%</span>
-            <span className="font-medium text-amber-600">Lift: {rec.lift}x</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const getStrengthLabel = (lift: number) => {
-    if (lift >= 3.0) return "Very Strong";
-    if (lift >= 2.0) return "Strong";
-    if (lift >= 1.5) return "Moderate";
-    return "Weak";
-  };
-
-  const uniqueTopGroups = useMemo(() => {
-    const unique = [];
-    const seenPairs = new Set();
-    // Reverse the array if we want "latest added" to appear at top (assuming later in array = later added)
-    // Or just iterate normally.
-    for (const rec of topGroups) {
-      const p1 = rec.item_id;
-      const p2 = rec.recommended_item_id;
-      const pairKey = [p1, p2].sort().join('-');
-      if (!seenPairs.has(pairKey)) {
-        seenPairs.add(pairKey);
-        unique.push(rec);
-      }
-    }
-    return unique;
-  }, [topGroups]);
-
-  const filteredTopGroups = uniqueTopGroups.filter((rec: any) => {
-    if (filterStrength === "All") return true;
-    return getStrengthLabel(rec.lift) === filterStrength;
-  });
-
-  return (
-    <div className="space-y-6">
-      {/* HEADER SECTION - Title and Manual Exploration on Top Right */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-border pb-4">
-        <div>
-          <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
-            <ShoppingCart className="h-5 w-5 text-primary" />
-            Retail Intelligence Dashboard
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">Automatically detected strongest product associations and bundle opportunities.</p>
-        </div>
-        
-        <div className="flex gap-2 items-center bg-card p-3 rounded-xl border border-border shadow-sm w-full lg:w-auto">
-          <div className="relative flex-1 lg:w-64">
-            <Input 
-              list="pm-products-list"
-              placeholder="Manual lookup by name/ID..." 
-              value={searchId} 
-              onChange={(e) => setSearchId(e.target.value.toUpperCase())}
-              onKeyDown={(e) => e.key === "Enter" && setFetchId(searchId)}
-              className="h-9 text-sm"
-            />
-            <datalist id="pm-products-list">
-              {products.map((p: any) => (
-                <option key={p.item_id} value={p.item_id}>
-                  {p.item_name}
-                </option>
-              ))}
-            </datalist>
-          </div>
-          <Button onClick={() => setFetchId(searchId)} size="sm" className="h-9 whitespace-nowrap">
-            <Search className="h-4 w-4 mr-2" />
-            Lookup
-          </Button>
-        </div>
-      </div>
-
-      {/* FILTER SECTION */}
-      {!fetchId && (
-        <div className="flex flex-wrap gap-2">
-          {["All", "Very Strong", "Strong", "Moderate"].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setFilterStrength(filter)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                filterStrength === filter 
-                  ? "bg-primary text-primary-foreground border-primary" 
-                  : "bg-card text-muted-foreground border-border hover:bg-muted"
-              }`}
-            >
-              {filter === "All" ? "All Recommendations" : `${filter} Match`}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* CONDITIONAL RENDER: Dashboard vs Manual Search Results */}
-      {fetchId ? (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-             <h3 className="text-lg font-semibold text-foreground">Manual Search Results for: {fetchId}</h3>
-             <Button variant="outline" size="sm" onClick={() => setFetchId(null)}>
-               <XCircle className="h-4 w-4 mr-2" />
-               Clear Search
-             </Button>
-          </div>
-          
-          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-            {isLoadingManual ? (
-               <div className="p-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
-            ) : manualRecommendations.length === 0 ? (
-               <div className="p-12 text-center text-muted-foreground flex flex-col items-center">
-                 <ShoppingCart className="h-10 w-10 opacity-20 mb-3" />
-                 <p>No associated products found for {fetchId}</p>
-               </div>
-            ) : (
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {manualRecommendations.map((rec: any, idx: number) => renderRecommendationCard(rec, idx, false))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {isLoadingTop ? (
-             <div className="p-12 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
-          ) : filteredTopGroups.length === 0 ? (
-             <div className="p-12 text-center text-muted-foreground flex flex-col items-center bg-card rounded border border-border">
-               <ShoppingCart className="h-10 w-10 opacity-20 mb-3" />
-               <p>No associations found for this filter.</p>
-             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredTopGroups.map((rec: any, idx: number) => renderRecommendationCard(rec, idx, true))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const StockAlertsTab = () => {
-  const { data: products = [], isLoading } = useProducts();
-  const alertMutation = useSendWhatsAppAlert();
-  const [alertSentStatus, setAlertSentStatus] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem("pm_alertSentStatus");
-    return saved ? JSON.parse(saved) : {};
-  });
-
-  useEffect(() => {
-    localStorage.setItem("pm_alertSentStatus", JSON.stringify(alertSentStatus));
-  }, [alertSentStatus]);
-  const [selectedAlertItem, setSelectedAlertItem] = useState<any>(null);
-  const [isNotifyingAll, setIsNotifyingAll] = useState(false);
-
-  const criticalItems = products.filter((p: any) => p.current_stock <= Math.round(p.safety_stock));
-
-  const handleNotifyGodown = async () => {
-    if (!selectedAlertItem) return;
-    
-    const message = `📢 Alert from Intelligent ERP Plugin\n🚨 CRITICAL STOCK ITEMS 🚨\n1. ${selectedAlertItem.item_id} - ${selectedAlertItem.item_name} → Stock: ${selectedAlertItem.current_stock}\nAction: Immediate restock required.`;
-    
-    try {
-      await alertMutation.mutateAsync({ message });
-      setAlertSentStatus((prev) => ({ ...prev, [selectedAlertItem.item_id]: true }));
-    } finally {
-      setSelectedAlertItem(null);
-    }
-  };
-
-  const handleNotifyAll = async () => {
-    const pendingItems = criticalItems.filter((p: any) => !alertSentStatus[p.item_id]);
-    if (pendingItems.length === 0) {
-      toast.info("All current critical items have already been notified.");
-      return;
-    }
-    
-    let message = `📢 Alert from Intelligent ERP Plugin\n🚨 BATCH CRITICAL STOCK ALERT 🚨\n`;
-    pendingItems.forEach((item: any, idx: number) => {
-      message += `${idx + 1}. ${item.item_id} - ${item.item_name} → Stock: ${item.current_stock}\n`;
-    });
-    message += `Action: Immediate restock required for all items.`;
-    
-    setIsNotifyingAll(true);
-    try {
-      await alertMutation.mutateAsync({ message });
-      const newStatus = { ...alertSentStatus };
-      pendingItems.forEach((item: any) => {
-        newStatus[item.item_id] = true;
-      });
-      setAlertSentStatus(newStatus);
-    } finally {
-      setIsNotifyingAll(false);
-    }
-  };
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-64 text-muted-foreground"><Loader2 className="animate-spin h-6 w-6 mr-2" /> Loading stock alerts...</div>;
-  }
-
-  return (
-    <div className="space-y-6">
-      {criticalItems.length === 0 ? (
-        <div className="text-center py-20 bg-card rounded border border-border">
-          <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground opacity-20 mb-4" />
-          <p className="text-lg text-muted-foreground font-medium">No critical stock items found.</p>
-        </div>
-      ) : (
-        <div className="bg-card rounded border border-border overflow-hidden">
-          <div className="p-4 flex justify-between items-center border-b border-border bg-muted/20">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-risk" /> 
-              Critical Products
-            </h3>
-            <Button onClick={handleNotifyAll} disabled={alertMutation.isPending || isNotifyingAll} variant="default">
-              {isNotifyingAll ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <MessageCircle className="h-4 w-4 mr-2" />}
-              Notify All Pending
-            </Button>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Item ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Current Stock</TableHead>
-                <TableHead>Safety Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {criticalItems.map((item: any) => {
-                const isSent = alertSentStatus[item.item_id];
-                return (
-                  <TableRow key={item.item_id}>
-                    <TableCell className="font-semibold text-primary">{item.item_id}</TableCell>
-                    <TableCell>{item.item_name}</TableCell>
-                    <TableCell className="text-risk font-bold">{item.current_stock}</TableCell>
-                    <TableCell>{Math.round(item.safety_stock)}</TableCell>
-                    <TableCell>
-                      {isSent ? (
-                        <span className="text-green-500 font-medium">Alert Sent</span>
-                      ) : (
-                        <span className="text-risk font-medium">Pending</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button 
-                        variant={isSent ? "outline" : "default"} 
-                        size="sm" 
-                        onClick={() => setSelectedAlertItem(item)}
-                        disabled={alertMutation.isPending}
-                      >
-                        <MessageCircle className="h-4 w-4 mr-1" /> {isSent ? "Resend Alert" : "Notify Godown"}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      )}
-
-      <AlertDialog open={!!selectedAlertItem} onOpenChange={(o) => (!o ? setSelectedAlertItem(null) : null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {alertSentStatus[selectedAlertItem?.item_id] ? "Resend WhatsApp Alert" : "Send WhatsApp Alert"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to {alertSentStatus[selectedAlertItem?.item_id] ? "resend the" : "send a"} WhatsApp restock alert to the godown manager for <b>{selectedAlertItem?.item_name}</b>?
-              This will automatically compile and open a WhatsApp message in a new tab.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={alertMutation.isPending}>Cancel</AlertDialogCancel>
-            <Button onClick={handleNotifyGodown} disabled={alertMutation.isPending}>
-              {alertMutation.isPending && <Loader2 className="animate-spin h-4 w-4 mr-2" />} 
-              {alertSentStatus[selectedAlertItem?.item_id] ? "Resend Alert" : "Send Alert"}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-};
-
 export default function ProductManagement() {
-  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem("pm_activeTab") || "active");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = new URLSearchParams(window.location.search).get("tab");
+    if (tabParam && ["active", "recycle-bin", "insights"].includes(tabParam)) {
+      return tabParam;
+    }
+    return sessionStorage.getItem("pm_activeTab") || "active";
+  });
   const navigate = useNavigate();
   const editId = searchParams.get("id");
   const isClearingRef = React.useRef(false);
+  
+  const tabParam = searchParams.get("tab");
+  useEffect(() => {
+    if (tabParam && ["active", "recycle-bin", "insights"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    sessionStorage.setItem("pm_activeTab", tab);
+    const newParams = new URLSearchParams();
+    newParams.set("tab", tab);
+    setSearchParams(newParams);
+  };
   
   useEffect(() => {
     if (isClearingRef.current) {
@@ -496,9 +164,9 @@ export default function ProductManagement() {
     if (editId) {
       sessionStorage.setItem("pm_editId", editId);
     } else if (savedId && !searchParams.has("id")) {
-      navigate(`/product-management?id=${savedId}`, { replace: true });
+      navigate(`/product-management?id=${savedId}&tab=${activeTab}`, { replace: true });
     }
-  }, [editId, navigate, searchParams]);
+  }, [editId, navigate, searchParams, activeTab]);
 
   const isEditMode = !!editId;
   const isAddMode = searchParams.get("mode") === "add";
@@ -628,20 +296,19 @@ export default function ProductManagement() {
     <div className="space-y-6 max-w-4xl mx-auto w-full">
       <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border shadow-sm">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
+          <h1 className="text-[32px] font-bold flex items-center gap-2 text-foreground leading-[40px]">
             <PackagePlus className="h-5 w-5 text-primary" />
             Product Management
-          </h2>
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">Manage active inventory items or restore deleted products.</p>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-6 grid w-full max-w-3xl grid-cols-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="mb-6 grid w-full max-w-2xl grid-cols-3">
           <TabsTrigger value="active">Active Products</TabsTrigger>
           <TabsTrigger value="recycle-bin">Recycle Bin</TabsTrigger>
-          <TabsTrigger value="market-basket">Market Basket</TabsTrigger>
-          <TabsTrigger value="stock-alerts">Stock Alerts</TabsTrigger>
+          <TabsTrigger value="insights">Product Insights</TabsTrigger>
         </TabsList>
         
         <TabsContent value="active" className="animate-in fade-in duration-300">
@@ -880,12 +547,8 @@ export default function ProductManagement() {
   <TabsContent value="recycle-bin" className="animate-in fade-in duration-300">
     <RecycleBinTab />
   </TabsContent>
-  <TabsContent value="market-basket" className="animate-in fade-in duration-300">
-    <MarketBasketTab />
-  </TabsContent>
-
-  <TabsContent value="stock-alerts" className="animate-in fade-in duration-300">
-    <StockAlertsTab />
+  <TabsContent value="insights" className="animate-in fade-in duration-300">
+    <ProductInsights />
   </TabsContent>
 </Tabs>
 </div>

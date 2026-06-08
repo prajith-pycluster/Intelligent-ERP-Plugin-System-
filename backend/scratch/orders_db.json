@@ -1,0 +1,58 @@
+{
+  "customers": [
+    {
+      "customer_id": "bcd0e2a0-df0f-40e9-9e9a-907be39614f7",
+      "customer_name": "karoyl",
+      "created_at": "2026-06-06T01:28:45.447031"
+    },
+    {
+      "customer_id": "6b8697e3-e986-4d92-904e-8572f07abcc4",
+      "customer_name": "Mayur",
+      "created_at": "2026-06-06T15:49:22.510099"
+    },
+    {
+      "customer_id": "fc614e12-2d6b-461b-84d9-dc16107de55e",
+      "customer_name": "sumit",
+      "created_at": "2026-06-06T16:46:31.551024"
+    }
+  ],
+  "orders": [
+    {
+      "order_id": "ORD-20260606-001",
+      "customer_id": "bcd0e2a0-df0f-40e9-9e9a-907be39614f7",
+      "customer_name": "karoyl",
+      "total_amount": 85.0,
+      "status": "Delivered",
+      "created_at": "2026-06-06T01:28:46.001906"
+    }
+  ],
+  "order_items": [
+    {
+      "order_item_id": "76112dfd-c6f5-483a-8d5e-526a27e1ba4d",
+      "order_id": "ORD-20260606-001",
+      "product_id": "P004",
+      "quantity": 1,
+      "price": 35.0,
+      "subtotal": 35.0,
+      "created_at": "2026-06-06T01:28:46.001997"
+    },
+    {
+      "order_item_id": "15a802f0-422d-4d0d-9296-d62873351e21",
+      "order_id": "ORD-20260606-001",
+      "product_id": "P008",
+      "quantity": 1,
+      "price": 30.0,
+      "subtotal": 30.0,
+      "created_at": "2026-06-06T01:28:46.002038"
+    },
+    {
+      "order_item_id": "70a22b4f-8fff-4959-8ba2-c4fa409c0833",
+      "order_id": "ORD-20260606-001",
+      "product_id": "P009",
+      "quantity": 1,
+      "price": 20.0,
+      "subtotal": 20.0,
+      "created_at": "2026-06-06T01:28:46.002065"
+    }
+  ]
+}

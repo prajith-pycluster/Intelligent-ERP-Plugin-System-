@@ -221,7 +221,7 @@ export default function Billing() {
 
   const { data: products = [], isLoading: isProductsLoading } = useProducts();
   const { data: predictiveData } = usePredictiveInventory();
-  const [localBillId, setLocalBillId] = useState<string | null>(() => localStorage.getItem("draft_bill_id"));
+  const [localBillId, setLocalBillId] = useState<string | null>(() => sessionStorage.getItem("draft_bill_id"));
   
   const { data: draftData, isLoading: isDraftLoading } = useDraftBill(localBillId);
   const createBillMutation = useCreateBill();
@@ -292,7 +292,7 @@ export default function Billing() {
       hasTriedRef.current = true;
       createBillMutation.mutateAsync().then(data => {
         setLocalBillId(data.bill_id);
-        localStorage.setItem("draft_bill_id", data.bill_id);
+        sessionStorage.setItem("draft_bill_id", data.bill_id);
       }).catch(err => {
         console.error(err);
         // Do NOT reset hasTriedRef to false. If the database schema is missing,
@@ -365,7 +365,7 @@ export default function Billing() {
         customer_name: customerName.trim()
       });
       // Clear draft locally so a new one is created next
-      localStorage.removeItem("draft_bill_id");
+      sessionStorage.removeItem("draft_bill_id");
       setLocalBillId(null);
       setCustomerName("");
     } catch (err) {
@@ -381,10 +381,10 @@ export default function Billing() {
     <div className="space-y-6 max-w-6xl mx-auto w-full animate-in fade-in duration-300">
       <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-border shadow-sm">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
+          <h1 className="text-[32px] font-bold flex items-center gap-2 text-foreground leading-[40px]">
             <ShoppingCart className="h-5 w-5 text-primary" />
             Billing System
-          </h2>
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">Manage operations and analyze billing history.</p>
         </div>
       </div>

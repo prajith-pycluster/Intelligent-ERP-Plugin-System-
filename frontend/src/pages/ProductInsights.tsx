@@ -29,15 +29,8 @@ const ProductInsights = () => {
   const handleSearch = () => {
     if (!query.trim()) return;
     const id = query.trim().toUpperCase();
-    if (isPredictiveId(id)) {
-      toast.warning(`"${id}" is a Predictive Stock product. View it in the Predictive Inventory dashboard instead.`);
-      return;
-    }
     setSearchId(id);
   };
-
-  // Block display if a cached search is a predictive product
-  const isBlockedPredictive = searchId && isPredictiveId(searchId);
 
   const product = React.useMemo(() => {
     if (!rawData) return null;
@@ -51,6 +44,9 @@ const ProductInsights = () => {
         : rawData.overstock_risk || "NO",
     };
   }, [rawData]);
+
+  // Block display if a cached search is a predictive product that is not in the active ERP catalog
+  const isBlockedPredictive = searchId && isPredictiveId(searchId) && !product && !isLoading;
 
 
 
@@ -68,11 +64,11 @@ const ProductInsights = () => {
   const statusIcon = product?.stockout_risk === "YES"
     ? <ShieldAlert className="h-5 w-5 text-risk" />
     : product?.overstock_risk === "YES"
-      ? <AlertTriangle className="h-5 w-5 text-warning" />
+      ? <AlertTriangle className="h-5 w-5 text-purple-600" />
       : <ShieldCheck className="h-5 w-5 text-success" />;
 
   const statusLabel = product?.stockout_risk === "YES" ? "Stockout Risk" : product?.overstock_risk === "YES" ? "Overstock" : "Safe";
-  const statusColor = product?.stockout_risk === "YES" ? "bg-risk/15 text-risk" : product?.overstock_risk === "YES" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
+  const statusColor = product?.stockout_risk === "YES" ? "bg-risk/15 text-risk" : product?.overstock_risk === "YES" ? "bg-purple-500/15 text-purple-600" : "bg-success/15 text-success";
 
   const metrics = product
     ? [

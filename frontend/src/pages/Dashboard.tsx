@@ -102,7 +102,7 @@ const Dashboard = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-background z-10">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
+          <h1 className="text-[32px] font-bold text-foreground leading-[40px]">Dashboard</h1>
           <p className="text-muted-foreground text-sm">Inventory overview and risk monitoring</p>
         </div>
         <Button variant="outline" onClick={() => setShowCompare(true)} className="gap-2">
@@ -170,7 +170,7 @@ const Dashboard = () => {
                             { label: "Reorder Qty", key: "reorder_quantity", format: (v: number) => Math.round(v) },
                             { label: "Safety Stock", key: "safety_stock", format: (v: number) => Math.round(Number(v)) },
                             { label: "Stockout Risk", key: "stockout_risk", format: parseBoolOrString, highlight: (v: any) => parseBoolOrString(v) === "YES" ? "text-risk font-bold" : "" },
-                            { label: "Overstock Risk", key: "overstock_risk", format: parseBoolOrString, highlight: (v: any) => parseBoolOrString(v) === "YES" ? "text-warning font-bold" : "" },
+                            { label: "Overstock Risk", key: "overstock_risk", format: parseBoolOrString, highlight: (v: any) => parseBoolOrString(v) === "YES" ? "text-purple-600 font-bold" : "" },
                             { label: "Demand Trend", key: "demand_trend", format: (v: string) => String(v) }
                           ];
 

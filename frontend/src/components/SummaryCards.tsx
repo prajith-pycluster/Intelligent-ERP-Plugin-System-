@@ -18,10 +18,10 @@ const SummaryCards = ({ activeFilter, onFilterChange, metrics }: SummaryCardsPro
   const cards: { label: string; value: number; icon: any; color: string; bg: string; filterKey: DashboardFilter }[] = [
     { label: "Total Products", value: metrics?.total_products || 0, icon: Package, color: "text-primary", bg: "bg-primary/10", filterKey: "all" },
     { label: "Stockout Risk", value: metrics?.stockout_risk_count || 0, icon: AlertTriangle, color: "text-risk", bg: "bg-risk/10", filterKey: "stockout" },
-    { label: "Overstock Items", value: metrics?.overstock_count || 0, icon: TrendingDown, color: "text-warning", bg: "bg-warning/10", filterKey: "overstock" },
+    { label: "Overstock Items", value: metrics?.overstock_count || 0, icon: TrendingDown, color: "text-purple-600", bg: "bg-purple-500/10", filterKey: "overstock" },
     { label: "Healthy Inventory", value: metrics?.healthy_count || 0, icon: ShieldCheck, color: "text-success", bg: "bg-success/10", filterKey: "healthy" },
-    { label: "High Demand", value: metrics?.high_demand_count || 0, icon: TrendingUp, color: "text-purple-500", bg: "bg-purple-500/10", filterKey: "high_demand" },
-    { label: "Low Demand", value: metrics?.low_demand_count || 0, icon: ArrowDownCircle, color: "text-sky-500", bg: "bg-sky-500/10", filterKey: "low_demand" },
+    { label: "High Demand", value: metrics?.high_demand_count || 0, icon: TrendingUp, color: "text-warning", bg: "bg-warning/10", filterKey: "high_demand" },
+    { label: "Low Demand", value: metrics?.low_demand_count || 0, icon: ArrowDownCircle, color: "text-yellow-600", bg: "bg-yellow-500/10", filterKey: "low_demand" },
   ];
 
   return (
@@ -39,8 +39,8 @@ const SummaryCards = ({ activeFilter, onFilterChange, metrics }: SummaryCardsPro
             <c.icon className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">{c.label}</p>
-            <p className="text-2xl font-bold text-card-foreground tabular-nums">{c.value}</p>
+            <p className="metric-card-label text-muted-foreground">{c.label}</p>
+            <p className="metric-card-value text-card-foreground tabular-nums">{c.value}</p>
           </div>
         </button>
       ))}

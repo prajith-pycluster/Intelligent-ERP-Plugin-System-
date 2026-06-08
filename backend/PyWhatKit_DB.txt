@@ -103,3 +103,18 @@ Time: 16:21
 Phone Number: +918123430599
 Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P080 - Heinz Baked Beans 400g → Stock: 8Action: Immediate restock required.
 --------------------
+Date: 6/6/2026
+Time: 18:33
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P037 - Ariel Matic Powder 2kg → Stock: 2Action: Immediate restock required.
+--------------------
+Date: 7/6/2026
+Time: 0:24
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 BATCH CRITICAL STOCK ALERT 🚨1. P037 - Ariel Matic Powder 2kg → Stock: 22. P036 - Surf Excel Easy Wash 2kg → Stock: 13. P038 - Rin Detergent Bar 250g → Stock: 34. P040 - Pril Dishwash Liquid 750ml → Stock: 2Action: Immediate restock required for all items.
+--------------------
+Date: 7/6/2026
+Time: 0:34
+Phone Number: +918123430599
+Message: 📢 Alert from Intelligent ERP Plugin🚨 CRITICAL STOCK ITEMS 🚨1. P099 - Bru Instant Coffee 200g → Stock: 2Action: Immediate restock required.
+--------------------

@@ -21,7 +21,7 @@ export default function RestockBilling() {
 
   useEffect(() => {
     if (initialList.length === 0) {
-      navigate('/godown');
+      navigate('/warehouse/inventory');
     } else {
       setItems(initialList.map((i: any) => ({
         item_id: i.item_id,
@@ -45,16 +45,17 @@ export default function RestockBilling() {
 
     restockMutation.mutate({ items: validItems }, {
       onSuccess: () => {
-        localStorage.removeItem("godown_load_list");
-        navigate('/godown'); // Navigate back after success
+        sessionStorage.removeItem("warehouse_load_list");
+        sessionStorage.removeItem("godown_load_list");
+        navigate('/warehouse/inventory'); // Navigate back after success
       }
     });
   };
 
   return (
     <div className="p-6 md:p-8 max-w-5xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-      <Button variant="ghost" onClick={() => navigate('/godown')} className="mb-4">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Godown
+      <Button variant="ghost" onClick={() => navigate('/warehouse/inventory')} className="mb-4">
+        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Inventory
       </Button>
 
       <div className="flex items-center gap-3 mb-6">
@@ -62,7 +63,7 @@ export default function RestockBilling() {
           <ShieldCheck className="w-8 h-8 text-blue-500" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Warehouse execution</h1>
+          <h1 className="text-[32px] font-bold tracking-tight leading-[40px]">Warehouse Execution</h1>
           <p className="text-muted-foreground mt-1">Review and confirm the batch restock entries.</p>
         </div>
       </div>

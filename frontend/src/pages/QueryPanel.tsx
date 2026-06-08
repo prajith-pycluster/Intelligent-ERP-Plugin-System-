@@ -105,7 +105,7 @@ const QueryPanel = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">Exploratory Insight</h2>
+        <h1 className="text-[32px] font-bold text-foreground flex items-center gap-2 leading-[40px]">Exploratory Insights</h1>
         <p className="text-muted-foreground text-sm">Run AI-powered queries on inventory data</p>
       </div>
 
