@@ -9,6 +9,9 @@ An enterprise-grade Intelligent ERP Plugin and Inventory Management System desig
 * **Comprehensive Inventory Management & CRUD**:
   * Real-time dashboard highlighting overall stock health, total active items, stockout risks, overstocked items, and high/low demand count.
   * Complete product life-cycle operations including a custom recycle bin with restore and permanent deletion mechanisms.
+* **Unified ERP Active Catalog & Lifecycle Controls**:
+  * Unified active ERP catalog logic (`_is_erp_product`) filtering active inventory. Normal products are always active. Predictive products (SI/NI/FI) are active only when approved, within their annual event windows, stocked (`current_stock > 0`), and not under review or expired.
+  * System-wide dashboard metrics strictly synchronise with the active ERP catalog, automatically deducting products once they pass their event dates or move into review windows.
 * **Analytical & Decision Query Layer**:
   * Calculates inventory optimization metrics dynamically: **Safety Stock**, **Reorder Point (ROP)**, **Reorder Quantity (ROQ)**, **Inventory Turnover**, and **ABC Classification** (categorizing items A, B, or C based on their financial sales value).
 * **Predictive Seasonal Inventory Engine**:
@@ -17,12 +20,19 @@ An enterprise-grade Intelligent ERP Plugin and Inventory Management System desig
   * Generates restock recommendations for the Godown manager, recommending both existing products (`EXPS`) and new temporary items (`PS`).
 * **AI-Powered Product Insights (Natural Language Explorer)**:
   * Chatbot interface that communicates with a local **Ollama** server running the `phi3` model to answer queries about product status.
+  * Supports exploring active predictive items (e.g. `SIP172`) with robust exception checking.
   * Maintains localized, persistent chat logs inside Supabase to preserve the context of current sessions.
+* **Customer Portal Browsing & Recommendations**:
+  * **New Arrivals**: Displays active, stocked seasonal/festival items directly from `Predictive Inventory -> All Stocks`.
+  * **Featured Items**: Employs demand intelligence to show items with an `Increasing` demand trend and a demand score $\ge 70$.
+  * **Filtered Browse Navigation**: Browse buttons navigate directly to `/browse?view=featured` or `/browse?view=new-arrivals` using query parameter parsing and presenting a premium indicator banner with one-click filter clearing.
+* **Integrated Cart-Based Market Basket Recommendations**:
+  * Replaces the separate Recommendations page with context-aware, in-cart cross-selling.
+  * For every product in the cart, the system fetches strict Market Basket/Apriori rules (lift $\ge 1.5$) from Supabase and suggests associated pairs under **Frequently Bought Together**.
+  * Each suggestion has an **Add Pair** button that adds the item, updating quantities, totals, and badges instantly without a page refresh.
 * **Integrated Billing & Sales System**:
   * Complete checkout interface with instant stock validation.
   * Deducts inventory stock instantly on purchase and logs completed transactions.
-* **Association Rule Mining (Market Basket Analysis)**:
-  * Computes item pairs frequently bought together and provides real-time confidence-based recommendation pairs for cross-selling.
 * **Automated WhatsApp Alerts**:
   * Uses `pywhatkit` to send instant WhatsApp notifications to the godown manager when restocking is required.
 
@@ -33,7 +43,7 @@ An enterprise-grade Intelligent ERP Plugin and Inventory Management System desig
 ```mermaid
 graph TD
     subgraph Frontend [Client UI - React & Vite]
-        UI[Dashboard / Products / Billing / Godown] --> ReactQuery[TanStack React Query]
+        UI[Dashboard / Products / Billing / Godown / Cart] --> ReactQuery[TanStack React Query]
     end
 
     subgraph Backend [FastAPI Server]
@@ -225,3 +235,4 @@ The system relies on the following relational table configurations:
 3. **Billing Interface**: Draft customer bills, check out items, and automatically reduce the inventory levels. Recommendations are shown for cross-selling products based on Market Basket Rules.
 4. **Godown Manager & Alerts**: Review auto-generated restocking suggestions based on standard demand forecasting (ROP/ROQ) or seasonal events (Predictive Engine). Restock products or click the alert button to send a WhatsApp notification directly to the warehouse.
 5. **AI Exploration**: Ask natural language questions in the chat panels to verify detailed inventory analysis of specific items.
+6. **Customer Portal**: Add items to the cart, review associations suggested below each item, buy recommended pairs with single-click buttons, and submit orders directly.
